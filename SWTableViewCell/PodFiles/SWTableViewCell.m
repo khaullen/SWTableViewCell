@@ -9,6 +9,7 @@
 #import "SWTableViewCell.h"
 #import "SWUtilityButtonView.h"
 #import "UITableViewCell+FixUITableViewCellAutolayout.h"
+#import "NSObject+PerformSelector.h"
 
 #define kSectionIndexWidth 15
 #define kAccessoryTrailingSpace 15
@@ -397,9 +398,10 @@ static NSString * const kTableViewPanState = @"state";
         {
             [self.containingTableView selectRowAtIndexPath:cellIndexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
             
-            if ([self.containingTableView.delegate respondsToSelector:@selector(tableView:didSelectRowAtIndexPath:)])
+            SEL aSelector = @selector(tableView:didSelectRowAtIndexPath:);
+            if ([self.containingTableView.delegate respondsToSelector:aSelector] && [self.containingTableView.delegate isKindOfClass:[NSObject class]])
             {
-                [self.containingTableView.delegate tableView:self.containingTableView didSelectRowAtIndexPath:cellIndexPath];
+                [(NSObject *)self.containingTableView.delegate performSelectorOnNextRunLoopCycle:aSelector withObjects:@[self.containingTableView, cellIndexPath]];
             }
         }
     }
@@ -420,9 +422,10 @@ static NSString * const kTableViewPanState = @"state";
         {
             [self.containingTableView deselectRowAtIndexPath:cellIndexPath animated:NO];
             
-            if ([self.containingTableView.delegate respondsToSelector:@selector(tableView:didDeselectRowAtIndexPath:)])
+            SEL aSelector = @selector(tableView:didDeselectRowAtIndexPath:);
+            if ([self.containingTableView.delegate respondsToSelector:aSelector] && [self.containingTableView.delegate isKindOfClass:[NSObject class]])
             {
-                [self.containingTableView.delegate tableView:self.containingTableView didDeselectRowAtIndexPath:cellIndexPath];
+                [(NSObject *)self.containingTableView.delegate performSelectorOnNextRunLoopCycle:aSelector withObjects:@[self.containingTableView, cellIndexPath]];
             }
         }
     }
